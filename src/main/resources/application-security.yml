@@ -1,0 +1,36 @@
+# ============================================================
+# 安全防护配置
+# Security Protection Configuration
+# ============================================================
+
+security:
+  protection:
+    # DDoS/CC攻击防护
+    ddos:
+      enabled: false                    # 是否启用DDoS防护
+      max-requests-per-minute: 100     # 单IP每分钟最大请求数
+      block-duration-minutes: 10       # 封禁时长（分钟）
+      warning-threshold: 80            # 警告阈值（百分比）
+    
+    # 登录保护
+    login:
+      enabled: false                    # 是否启用登录保护
+      max-failed-attempts: 5           # 最大失败尝试次数
+      lockout-minutes: 15              # 账户锁定时间（分钟）
+      captcha-threshold: 3             # 触发验证码的失败次数
+    
+    # 爬虫防护
+    bot:
+      enabled: false                    # 是否启用爬虫防护
+      max-pages-per-minute: 300         # 单IP每分钟最大页面访问数
+      block-duration-minutes: 1       # 封禁时长（分钟）
+    
+    # 告警配置
+    alert:
+      enabled: true                    # 是否启用告警
+      email-enabled: false             # 是否启用邮件告警
+      log-enabled: true                # 是否记录日志
+      admin-emails:                    # 管理员邮箱列表
+        - admin@example.com
+        # - security@example.com
+

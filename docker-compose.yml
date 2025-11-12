@@ -1,0 +1,121 @@
+version: '3.8'
+
+services:
+  # YJS微服务
+  yjs-service:
+    build:
+      context: ./yjs-service
+      dockerfile: Dockerfile
+    container_name: affine-yjs-service
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - HOST=0.0.0.0
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - affine-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Java后端服务
+  affine-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: affine-backend
+    ports:
+      - "8080:8080"
+      - "9092:9092"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - YJS_SERVICE_URL=http://yjs-service:3001
+      - MYSQL_HOST=mysql
+      - REDIS_HOST=redis
+    depends_on:
+      yjs-service:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - affine-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+  # MySQL数据库
+  mysql:
+    image: mysql:8.0
+    container_name: affine-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=affine
+      - MYSQL_USER=affine
+      - MYSQL_PASSWORD=affine123
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - affine-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Redis缓存
+  redis:
+    image: redis:7-alpine
+    container_name: affine-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+    networks:
+      - affine-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  affine-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local
+  redis-data:
+    driver: local

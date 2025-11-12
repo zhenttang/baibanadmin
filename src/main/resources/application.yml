@@ -1,0 +1,128 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: yunke-java-backend
+  
+  # 数据库配置
+  datasource:
+    url: jdbc:mysql://localhost:3306/affine?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    
+  # JPA配置
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+    
+  # Flyway数据库迁移
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    
+  # Redis配置
+  redis:
+    host: localhost
+    port: 6379
+    password: 
+    database: 0
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: -1ms
+        max-idle: 8
+        min-idle: 0
+    timeout: 3000ms
+
+# AFFiNE业务配置
+affine:
+  # 支付配置 - 轻量级方案
+  payment:
+    provider: alipay-sandbox  # direct: 直接对接, alipay-sandbox: 支付宝沙箱
+    base-url: http://127.0.0.1:8080
+    callback-url: http://127.0.0.1:8080/api/community/payments/callback
+    success-url: http://127.0.0.1:3000/payment/success
+  
+  # 支付宝沙箱配置
+  alipay:
+    app-id: "9021000150688633"  # 您的沙箱应用ID
+    private-key: "MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCELuMt93HeuARhreh/4St3ZDjUqEB7MtMX1cgpuJO28w463ZxvAr/jORkA74nn7RE8D0yOF+dF+BcjBwMN2lsxPNEgPgVGDqs4Cd81USZKdw2GWAEbRPexhdQxBxVRzM0jM7kd/QDD2Aost2U38oSea0TiBVIMjYn/Rqxc3cxGE1UnQzsRGIQlmFRprrNuP6Fwwa+gk9vZd7KfkuBrqFhtMTsEQjYYWtn9mYMstzYGk8JhIFUqM9nqb2whzMK3l3DvczYb0dXpvOOkBm7nuy8uAThikjqcpMk3NVyRTeUMVYtr2O0ls9Q/XuMk3LtHZaK2UU6tU0CqDwJ39373icd5AgMBAAECggEAI9a2n9rsU8+e2IEXfbymVVumEPqBaSXRmC/Ncopp+nuSCyHU7UBYmJn9joRj5q8fMiKPxiLzAMSQOV4IVPQ0L3hm1xAZy/HkOHBsxX74G86FqzwnKKadZdN8QcLC5AfcQsQeV+QmFfN4ZsFevzmQ/YbmCUYaBe9GUCFwUEmOvhzR+gtcNcT+keqxcHChJu1qfdcsKmC1vqHiKlmrscfk5OGAJ5AF8OMGl8pTizLBRZfaqDnmBvXLu+0tlzl9bTlmgrPiT/1pV9vwDRGRNBu8fpDoaMMv0j1UdXEz99kwRRtzBmEE377Prli34WWqbcKOybneuGCI3ywvoRT32YSsBQKBgQC9N4zVZHkvfqtow+Kicdvl6xlNObCIApy2psTCvnnffoO1DtC/mov8U2z/ga5ikyIVWK9MuKfY4vu2LivqFSuTZiQ48cuJ5LIpZe88YJaaycy7Y7cYFfr/yATOZra0C/gyxWcaNe1JukJpw31vBmI+kIWIcUWeG5vXe/6LSmke2wKBgQCy1h7ftxCJcOUfAdB7FhVsftG34sMchoMlokdDwyw3FKY35m2uUf8bv2WPypTtqrjqXOcGCiKbIbBJA4D34zofFlWHj4qFSLj0Oyg1UCqMx7WMK8TPUZ0zCrDF0f+9/DR8Xi2LhiH6FhzyQR8LbiLzBNZizrp5OgX6sBEzNGNxOwKBgFJOBoGP6bLCG5c/laZpdmhlQiU4UdRnpnlAw1eeeO7BXlL0ddLSS8/fDgt6Aju4mlvErsPlkoUh/rF5FfsFaGX+SQVID+wUQXcGcvDFZt0/qEFel3bvoLV/8K9DOHfKuRSEj1t0V5n5XggZU8dmdHeYb60w8EJc6gXqVoeKP31/AoGAIuKBw0ICh8zt5M6FzHzSUQesASLKzJWwn3a4UA+SYGw2wFDCtG5qRQ9g0FvEEVhsGctlhVgUyA4aRSPZ1IEOpWHF7Vuiub0l1v5zKXMp2axbTax8B7Tz5TEAqpX8PSMlWd1FJSJVHmOR4e+yDpi9WIppB30sAtm+sNgHguWFQGECgYBAujlhulEm5C0+RIV46SBpCbsuCPlVzMXaiWLDaVIpAd0QxXyLeLKOP4ZTtvOGOL14isB6QtIAtcgPdJ6Me7NnXDcPzqOVs+VTdkTn6agRD1vyFfDZEkrRkJ0zUOcYeneU9qf/AKDw3jRronoD3D1cP4xRfvC2zQWT47wF+ZRz3w=="             # 您的沙箱私钥（需要填写）
+    alipay-public-key: "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAg9y8lRZGC1vL/ABRA05rJJnjAp/F3vu0jFG9Vtfu5Mjcbk5qF2sdHfop5BC/EOk1OxSIuHQ+EX8WVTPgkxZ6TfbGzfa9Qwx2X7/PV6HH4v+jlsbveOiEQiFkonBh4+IjeHfmO5Y/GVLQjLkm4xJ1bRw6jDimwjDEEaMhVhClpSIorxHMlbpHfYZFZI39gvLwqIn9zGY6fojzrUGlWGyVdybi0YnAHD4eg14M9HLVjgfjZ+6DxsDHNdTgOl1zSVQYPmoDJUBWIxu9QFS0efnptaX1hG+HY8wSbH1JL6b9+Og/1U2/hTrdKMZW+RIe1tVUN6yPi05kHUZ9k2pm8eSiYQIDAQAB"       # 支付宝沙箱公钥（需要填写）
+    sign-type: "RSA2"
+    charset: "UTF-8"
+    gateway-url: "https://openapi-sandbox.dl.alipaydev.com/gateway.do"
+    format: "json"
+    notify-url: "http://127.0.0.1:8080/api/community/payments/alipay/notify"
+    return-url: "http://127.0.0.1:3000/payment/success"
+    sandbox: true
+    
+  # 文件存储配置
+  storage:
+    type: local # local, s3, oss
+    local:
+      path: /var/affine/storage
+    
+  # CORS配置
+  cors:
+    allowed-origins: 
+      - http://localhost:3000
+      - http://172.24.48.1:3000
+    allowed-methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - OPTIONS
+    allowed-headers: "*"
+    allow-credentials: true
+
+# SocketIO配置
+socketio:
+  server:
+    host: 0.0.0.0
+    port: 9092
+
+# WebSocket配置
+websocket:
+  port: 9092
+  hostname: 0.0.0.0  # 监听所有网卡，支持外部访问
+  max-frame-payload-length: 5242880  # 5MB - 支持大文档更新
+  max-http-content-length: 5242880   # 5MB - 支持大文档更新
+
+# YJS微服务配置
+yjs:
+  service:
+    url: http://localhost:3001  # YJS微服务地址
+    timeout: 5000               # 超时时间（毫秒）
+    retry: 3                    # 重试次数
+
+# 日志配置
+logging:
+  level:
+    com.yunke.backend: INFO
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/affine-backend.log
+
+# 管理端点配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always

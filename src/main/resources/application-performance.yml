@@ -1,0 +1,146 @@
+# 性能优化配置文件
+spring:
+  profiles:
+    active: performance
+
+  # 已移除 WebFlux 运行栈，此处配置不再需要
+
+  # 数据源连接池优化
+  datasource:
+    hikari:
+      maximum-pool-size: 30
+      minimum-idle: 10
+      connection-timeout: 20000
+      idle-timeout: 300000
+      max-lifetime: 1200000
+      leak-detection-threshold: 60000
+      connection-test-query: SELECT 1
+      auto-commit: false
+      transaction-isolation: TRANSACTION_READ_COMMITTED
+
+  # Redis连接池优化
+  redis:
+    lettuce:
+      pool:
+        max-active: 64
+        max-idle: 32
+        min-idle: 8
+        max-wait: 10000ms
+      shutdown-timeout: 5000ms
+    timeout: 10000ms
+    connect-timeout: 5000ms
+
+  # JPA优化（使用正确的 Boot 属性路径）
+  jpa:
+    show-sql: false
+    properties:
+      hibernate.jdbc.batch_size: 50
+      hibernate.order_inserts: true
+      hibernate.order_updates: true
+      hibernate.jdbc.batch_versioned_data: true
+      hibernate.format_sql: false
+      hibernate.use_sql_comments: false
+      hibernate.generate_statistics: false
+      # 二级缓存如需启用，请引入 JCache/Ehcache 提供者后再开启下列配置：
+      # hibernate.cache.use_second_level_cache: true
+      # hibernate.cache.use_query_cache: true
+      # hibernate.cache.region.factory_class: org.hibernate.cache.jcache.JCacheRegionFactory
+
+  # Spring Cache（Caffeine）
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=10000,expireAfterWrite=30m,recordStats
+
+# 服务器配置优化
+server:
+  port: 8080
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain,text/css,application/javascript
+    min-response-size: 1024
+  http2:
+    enabled: true
+  tomcat:
+    threads:
+      max: 200
+      min-spare: 10
+    max-connections: 8192
+    accept-count: 100
+    connection-timeout: 20000
+    max-http-post-size: 10MB
+    
+# 日志配置
+logging:
+  level:
+    root: INFO
+    com.yunke.backend: DEBUG
+    org.springframework.web: WARN
+    org.hibernate.SQL: ERROR
+    org.springframework.security: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/affine-backend.log
+    max-size: 100MB
+    max-history: 30
+
+# 监控和指标配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,loggers,threaddump,heapdump
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: affine-backend
+      environment: performance
+
+# 缓存配置
+cache:
+  caffeine:
+    spec: maximumSize=10000,expireAfterWrite=30m,recordStats
+  redis:
+    ttl: 
+      default: 1800  # 30分钟
+      user: 3600     # 1小时
+      workspace: 7200 # 2小时
+      document: 1800  # 30分钟
+      
+# 线程池配置
+executor:
+  core-pool-size: 10
+  max-pool-size: 50
+  queue-capacity: 200
+  keep-alive-seconds: 60
+  thread-name-prefix: "affine-async-"
+
+# AI服务配置
+ai:
+  timeout: 30s
+  max-retries: 3
+  circuit-breaker:
+    enabled: true
+    failure-rate-threshold: 50
+    wait-duration-in-open-state: 10s
+    sliding-window-size: 10
+    
+# 搜索配置
+search:
+  max-results: 100
+  highlight-fragment-size: 200
+  index-batch-size: 100
+  
+# 协作配置
+collaboration:
+  max-concurrent-users: 100
+  operation-history-retention: 7d
+  cursor-update-interval: 100ms
+  heartbeat-interval: 30s

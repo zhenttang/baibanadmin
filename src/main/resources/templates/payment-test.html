@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AFFiNE 支付宝沙箱测试</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .form-section {
+            margin-bottom: 40px;
+        }
+        
+        .form-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            flex: 1;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-right: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .qr-section {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .qr-code {
+            margin: 20px 0;
+        }
+        
+        .status-section {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-failed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 AFFiNE 支付宝沙箱测试</h1>
+            <p>测试支付宝沙箱环境的完整支付流程</p>
+        </div>
+        
+        <div class="content">
+            <div class="form-section">
+                <h2>📝 订单信息</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="planType">订阅类型</label>
+                        <select id="planType">
+                            <option value="pro_monthly">Pro 月度订阅 (¥29.00)</option>
+                            <option value="pro_yearly">Pro 年度订阅 (¥290.00)</option>
+                            <option value="team_monthly">团队月度订阅 (¥99.00)</option>
+                            <option value="test_small">测试小额 (¥0.01)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="paymentMethod">支付方式</label>
+                        <select id="paymentMethod">
+                            <option value="alipay">支付宝</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="subject">订单标题</label>
+                        <input type="text" id="subject" value="AFFiNE Pro订阅服务" />
+                    </div>
+                    <div class="form-group">
+                        <label for="userId">用户ID（可选）</label>
+                        <input type="text" id="userId" placeholder="留空自动生成" />
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">订单描述</label>
+                    <textarea id="description" rows="3">AFFiNE Pro功能订阅，包含高级协作功能和无限存储空间</textarea>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h2>🎯 操作</h2>
+                <button class="btn" onclick="createPayment()">创建支付订单</button>
+                <button class="btn btn-secondary" onclick="queryStatus()" id="queryBtn" disabled>查询支付状态</button>
+            </div>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <div>处理中...</div>
+            </div>
+            
+            <div class="qr-section" id="qrSection">
+                <h3>📱 扫码支付</h3>
+                <div class="qr-code" id="qrCode"></div>
+                <div id="orderInfo"></div>
+                <p>请使用支付宝沙箱钱包扫描上方二维码完成支付</p>
+            </div>
+            
+            <div class="status-section" id="statusSection" style="display: none;">
+                <div id="statusContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
+    <script>
+        let currentOrderId = null;
+        let statusInterval = null;
+        
+        // 金额映射
+        const amountMap = {
+            'pro_monthly': 2900,    // 29.00元
+            'pro_yearly': 29000,    // 290.00元
+            'team_monthly': 9900,   // 99.00元
+            'test_small': 1         // 0.01元
+        };
+        
+        // 确保QRCode库已加载
+        function ensureQRCodeLoaded() {
+            return new Promise((resolve, reject) => {
+                if (typeof QRCode !== 'undefined') {
+                    resolve();
+                    return;
+                }
+                
+                // 如果QRCode未定义，尝试使用备用方案
+                const script = document.createElement('script');
+                script.src = 'https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js';
+                script.onload = () => {
+                    if (typeof QRCode !== 'undefined') {
+                        resolve();
+                    } else {
+                        reject(new Error('QRCode library failed to load'));
+                    }
+                };
+                script.onerror = () => reject(new Error('Failed to load QRCode library'));
+                document.head.appendChild(script);
+            });
+        }
+        
+        async function createPayment() {
+            const planType = document.getElementById('planType').value;
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const subject = document.getElementById('subject').value;
+            const description = document.getElementById('description').value;
+            const userId = document.getElementById('userId').value;
+            
+            const request = {
+                planType: planType,
+                amount: amountMap[planType],
+                paymentMethod: paymentMethod,
+                subject: subject,
+                description: description,
+                userId: userId || null
+            };
+            
+            showLoading(true);
+            hideStatus();
+            
+            try {
+                const response = await fetch('/payment/test/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(request)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentOrderId = result.orderId;
+                    showQRCode(result);
+                    document.getElementById('queryBtn').disabled = false;
+                    startStatusPolling();
+                } else {
+                    showStatus('failed', '创建支付订单失败: ' + result.message);
+                }
+            } catch (error) {
+                console.error('创建支付订单失败:', error);
+                showStatus('failed', '网络错误: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        function showQRCode(result) {
+            const qrSection = document.getElementById('qrSection');
+            const qrCode = document.getElementById('qrCode');
+            const orderInfo = document.getElementById('orderInfo');
+            
+            // 清空二维码区域
+            qrCode.innerHTML = '';
+            
+            // 生成二维码 - 使用备用方案
+            if (result.qrCodeUrl || result.payData) {
+                const qrData = result.qrCodeUrl || result.payData;
+                
+                // 尝试使用QRCode库生成二维码
+                ensureQRCodeLoaded().then(() => {
+                    QRCode.toCanvas(qrData, { width: 200, margin: 2 }, (error, canvas) => {
+                        if (error) {
+                            console.error('生成二维码失败:', error);
+                            showFallbackQRCode(qrData, qrCode);
+                        } else {
+                            qrCode.appendChild(canvas);
+                        }
+                    });
+                }).catch((error) => {
+                    console.error('QRCode库加载失败:', error);
+                    showFallbackQRCode(qrData, qrCode);
+                });
+            }
+            
+            // 显示订单信息
+            orderInfo.innerHTML = `
+                <div style="margin-top: 15px; text-align: left; display: inline-block;">
+                    <p><strong>订单号:</strong> ${result.orderId}</p>
+                    <p><strong>金额:</strong> ¥${(result.amount / 100).toFixed(2)}</p>
+                    <p><strong>状态:</strong> <span class="status-${result.status.toLowerCase()}">${getStatusText(result.status)}</span></p>
+                </div>
+            `;
+            
+            qrSection.style.display = 'block';
+        }
+        
+        // 备用二维码显示方案
+        function showFallbackQRCode(qrData, container) {
+            // 使用在线二维码生成服务作为备用方案
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrData)}`;
+            const img = document.createElement('img');
+            img.src = qrUrl;
+            img.alt = '支付二维码';
+            img.style.width = '200px';
+            img.style.height = '200px';
+            img.onerror = () => {
+                // 如果在线服务也失败，显示文本信息
+                container.innerHTML = `
+                    <div style="border: 2px dashed #ccc; padding: 20px; width: 200px; height: 200px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 12px; color: #666;">
+                        <div>
+                            <p>二维码生成失败</p>
+                            <p style="margin-top: 10px; word-break: break-all; font-size: 10px;">${qrData}</p>
+                            <p style="margin-top: 10px; color: #999;">请手动复制上方链接到支付宝</p>
+                        </div>
+                    </div>
+                `;
+            };
+            container.appendChild(img);
+        }
+        
+        async function queryStatus() {
+            if (!currentOrderId) {
+                alert('请先创建支付订单');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/payment/test/status/${currentOrderId}`);
+                const status = await response.text();
+                const statusText = getStatusText(status.replace(/"/g, ''));
+                
+                showStatus(status.toLowerCase().replace(/"/g, ''), `当前支付状态: ${statusText}`);
+                
+                if (status.includes('SUCCESS')) {
+                    stopStatusPolling();
+                    showStatus('success', '🎉 支付成功！订单已完成');
+                }
+            } catch (error) {
+                console.error('查询支付状态失败:', error);
+                showStatus('failed', '查询支付状态失败: ' + error.message);
+            }
+        }
+        
+        function startStatusPolling() {
+            // 每3秒查询一次状态
+            statusInterval = setInterval(queryStatus, 3000);
+        }
+        
+        function stopStatusPolling() {
+            if (statusInterval) {
+                clearInterval(statusInterval);
+                statusInterval = null;
+            }
+        }
+        
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+        
+        function showStatus(type, message) {
+            const statusSection = document.getElementById('statusSection');
+            const statusContent = document.getElementById('statusContent');
+            
+            statusSection.className = `status-section status-${type}`;
+            statusContent.innerHTML = message;
+            statusSection.style.display = 'block';
+        }
+        
+        function hideStatus() {
+            document.getElementById('statusSection').style.display = 'none';
+        }
+        
+        function getStatusText(status) {
+            const statusMap = {
+                'PENDING': '待支付',
+                'PROCESSING': '支付中',
+                'SUCCESS': '支付成功',
+                'FAILED': '支付失败',
+                'CANCELLED': '已取消',
+                'REFUNDED': '已退款',
+                'UNKNOWN': '未知状态'
+            };
+            return statusMap[status] || status;
+        }
+        
+        // 页面卸载时停止轮询
+        window.addEventListener('beforeunload', stopStatusPolling);
+    </script>
+</body>
+</html>
