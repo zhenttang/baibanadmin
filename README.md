@@ -16,63 +16,20 @@
 </p>
 
 <p align="center">
-  <a href="#-特性亮点">特性</a> •
+  <a href="#-系统架构">架构</a> •
   <a href="#-快速开始">快速开始</a> •
-  <a href="#-架构概览">架构</a> •
+  <a href="#核心模块">模块</a> •
   <a href="#-文档">文档</a> •
   <a href="./README_EN.md">English</a>
 </p>
 
 ---
 
-## ✨ 特性亮点
+## 🏗️ 系统架构
 
-<table>
-  <tr>
-    <td align="center" width="25%">
-      <img src="https://img.icons8.com/fluency/48/000000/workstation.png" alt="Workspace">
-      <br><strong>多租户工作空间</strong>
-      <br><sub>组织→空间→文档层级<br>内建 RBAC/ACL 权限控制</sub>
-    </td>
-    <td align="center" width="25%">
-      <img src="https://img.icons8.com/fluency/48/000000/synchronize.png" alt="CRDT">
-      <br><strong>实时协同编辑</strong>
-      <br><sub>基于 CRDT 的文档同步<br>毫秒级状态一致性</sub>
-    </td>
-    <td align="center" width="25%">
-      <img src="https://img.icons8.com/fluency/48/000000/artificial-intelligence.png" alt="AI">
-      <br><strong>AI 智能助手</strong>
-      <br><sub>多模型支持<br>智能内容生成与分析</sub>
-    </td>
-    <td align="center" width="25%">
-      <img src="https://img.icons8.com/fluency/48/000000/online-payment.png" alt="Payment">
-      <br><strong>支付系统</strong>
-      <br><sub>可插拔支付提供商<br>订阅与计费管理</sub>
-    </td>
-  </tr>
-  <tr>
-    <td align="center">
-      <img src="https://img.icons8.com/fluency/48/000000/conference-call.png" alt="Community">
-      <br><strong>社区生态</strong>
-      <br><sub>内容分享与互动<br>论坛与评论系统</sub>
-    </td>
-    <td align="center">
-      <img src="https://img.icons8.com/fluency/48/000000/appointment-reminders.png" alt="Notification">
-      <br><strong>多渠道通知</strong>
-      <br><sub>邮件/SMS/Push<br>智能消息推送</sub>
-    </td>
-    <td align="center">
-      <img src="https://img.icons8.com/fluency/48/000000/cloud-storage.png" alt="Storage">
-      <br><strong>灵活存储</strong>
-      <br><sub>本地/S3/OSS<br>多策略文件管理</sub>
-    </td>
-    <td align="center">
-      <img src="https://img.icons8.com/fluency/48/000000/monitor.png" alt="Observability">
-      <br><strong>可观测性</strong>
-      <br><sub>Prometheus + Actuator<br>全方位监控告警</sub>
-    </td>
-  </tr>
-</table>
+<p align="center">
+  <img src="assets/architecture.svg" alt="系统架构图" width="100%">
+</p>
 
 ---
 
@@ -112,12 +69,6 @@ java -jar target/yunke-java-backend-0.21.0.jar
 - 健康检查: http://localhost:8080/actuator/health
 
 ---
-
-## 🏗️ 架构概览
-
-<p align="center">
-  <img src="assets/architecture.svg" alt="系统架构图" width="100%">
-</p>
 
 ### 核心模块
 
